@@ -11,6 +11,12 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+import environ
+from django_prose_editor.fields import ProseEditorField
+
+env = environ.Env()
+environ.Env.read_env()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -20,17 +26,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-pbbie2qzqrsc^%r+z(#k@u0cbbop3w7a-)%6&er2gl6!113g2i"
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG")
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS_DEV")
 
 # Application definition
-
-INSTALLED_APPS = [
+DJANGO_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -39,7 +43,18 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
 ]
 
+PROJECT_APPS = []
+THIRD_PARTY_APPS = ["corsheaders", "rest_framework", "django_prose_editor"]
+
+INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + THIRD_PARTY_APPS
+
+content = ProseEditorField(
+    extensions={"Bold": True, "Italic": True, "BulletList": True, "Link": True},
+    sanitize=True,
+)
+
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -114,9 +129,39 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 STATIC_URL = "static/"
+
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_URL = "media/"
+
+STATICFILES_DIR = [os.path.join(BASE_DIR, "build/static")]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# configure the django rest framework options
+REST_FRAMEWORK = {
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticatedOrReadOnly"
+    ]
+}
+
+# configure cors
+CORS_ORIGIN_WHITELIST_DEV = env.list("CORS_ORIGIN_WHITELIST_DEV")
+CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS_DEV")
+
+# show in console like a log, (development)
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+if not DEBUG:
+    ALLOWED_HOSTS = env.list("ALLOWED_HOSTS_DEPLOY")
+    CORS_ORIGIN_WHITELIST_DEPLOY = env.list("CORS_ORIGIN_WHITELIST_DEPLOY")
+    CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS_DEPLOY")
+
+    DATABASES = {"default": env.db("DATABASE_URL")}
+
+    # avoid duplicated requests
+    DATABASES["default"]["ATOMIC_REQUESTS"] = True
