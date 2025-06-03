@@ -12,5 +12,5 @@ dependencies = [
     "pillow==11.2.1",
     "django-storages==1.14.6",
     "django-prose-editor[sanitize]",
-    "psycopg==3.2.7"
+    "psycopg==3.2.7",
 ]
