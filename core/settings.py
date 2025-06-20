@@ -1,22 +1,16 @@
-from pathlib import Path
-import os
-import environ
 from django_prose_editor.fields import ProseEditorField
+from pathlib import Path
+import environ
+import os
 
-env = environ.Env()
-environ.Env.read_env()
-
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR_BACKEND = Path(__file__).resolve().parent.parent
 BASE_DIR_FRONTED = BASE_DIR_BACKEND.parent / "zeta-frontend"
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
+env = environ.Env()
+environ.Env.read_env(BASE_DIR_BACKEND / ".env")
 
-# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("SECRET_KEY")
 
-# SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG")
 
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS_DEV")
@@ -31,7 +25,9 @@ DJANGO_APPS = [
     "django.contrib.staticfiles",
 ]
 
-PROJECT_APPS = []
+# here we add our created apps
+PROJECT_APPS = ["apps.blog", "apps.categories"]
+
 THIRD_PARTY_APPS = ["corsheaders", "rest_framework", "django_prose_editor"]
 
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + THIRD_PARTY_APPS
@@ -125,11 +121,7 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR_FRONTED, "build/static")]
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # configure the django rest framework options
-REST_FRAMEWORK = {
-    "DEFAULT_PERMISSION_CLASSES": [
-        "rest_framework.permissions.IsAuthenticatedOrReadOnly"
-    ]
-}
+REST_FRAMEWORK = {"DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticatedOrReadOnly"]}
 
 # configure cors
 CORS_ORIGIN_WHITELIST_DEV = env.list("CORS_ORIGIN_WHITELIST_DEV")
