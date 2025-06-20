@@ -14,3 +14,6 @@ dependencies = [
     "django-prose-editor[sanitize]",
     "psycopg==3.2.7",
 ]
+
+[tool.black]
+line-length = 200
