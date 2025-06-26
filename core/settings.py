@@ -28,13 +28,22 @@ DJANGO_APPS = [
 # here we add our created apps
 PROJECT_APPS = ["apps.blog", "apps.categories"]
 
-THIRD_PARTY_APPS = ["corsheaders", "rest_framework", "django_prose_editor"]
+THIRD_PARTY_APPS = [
+    "corsheaders",
+    "rest_framework",
+    "django_prose_editor",
+]
 
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + THIRD_PARTY_APPS
 
 content = ProseEditorField(
-    extensions={"Bold": True, "Italic": True, "BulletList": True, "Link": True},
-    sanitize=True,
+    extensions={
+        "Bold": True,
+        "Italic": True,
+        "BulletList": True,
+        "Link": True,
+    },
+    sanitize=True,  # Enable sanitization based on extension configuration
 )
 
 MIDDLEWARE = [
@@ -53,7 +62,7 @@ ROOT_URLCONF = "core.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [os.path.join(BASE_DIR_FRONTED, "build")],
+        "DIRS": [os.path.join(BASE_DIR_FRONTED, "dist")],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -66,9 +75,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = "core.wsgi.application"
-
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
     "default": {
@@ -113,7 +119,7 @@ STATIC_URL = "static/"
 MEDIA_ROOT = os.path.join(BASE_DIR_BACKEND, "media")
 MEDIA_URL = "media/"
 
-STATICFILES_DIRS = [os.path.join(BASE_DIR_FRONTED, "build/static")]
+STATICFILES_DIRS = [os.path.join(BASE_DIR_FRONTED, "dist/assets")]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
