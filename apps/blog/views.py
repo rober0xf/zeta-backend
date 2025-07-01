@@ -1,3 +1,4 @@
+from django.db.models.query_utils import Q
 from rest_framework import permissions, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -63,7 +64,20 @@ class PostDetailView(APIView):
             if not ViewCount.objects.filter(post=post, ip_address=ip):
                 view = ViewCount(post=post, ip_address=ip)
                 view.save()
+                post.views += 1
+                post.save()
 
             return Response({"post": serializer.data}, status=status.HTTP_200_OK)
         else:
             return Response({"error": "post not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+# filter by category, title and if it appears in the description
+class SearchBlogView(APIView):
+    def get(self, request):
+        search_term = request.query_params.get("s")  # we take the ?s from the url
+        matches = Post.objects.filter(
+            Q(title__icontains=search_term) | Q(description__icontains=search_term) | Q(category__name__icontains=search_term),  # __name for the subcategory
+        )  # Q filter for complex search
+        serializer = PostListSerializer(matches, many=True)
+        return Response({"filtered_posts": serializer.data}, status=status.HTTP_200_OK)
