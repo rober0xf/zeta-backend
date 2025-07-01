@@ -1,6 +1,8 @@
 from rest_framework import serializers
-from .models import Post
+
 from apps.categories.serializers import CategorySerializer
+
+from .models import Post
 
 
 class PostSerializer(serializers.ModelSerializer):
@@ -15,7 +17,6 @@ class PostSerializer(serializers.ModelSerializer):
             "thumbnail",
             "content",
             "published",
-            "description",
             "views",
             "category",
         ]
@@ -32,7 +33,6 @@ class PostListSerializer(serializers.ModelSerializer):
             "slug",
             "thumbnail",
             "published",
-            "description",
             "views",
             "category",
         ]

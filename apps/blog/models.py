@@ -1,11 +1,12 @@
 from django.db import models
 from django.utils import timezone
-from apps.categories.models import Category
 from django_prose_editor.fields import ProseEditorField
+
+from apps.categories.models import Category
 
 
 def blog_thumbnail_dir(instance, filename):
-    return "blog/{0}/{1}".format(instance.title, filename)
+    return f"blog/{instance.title}/{filename}"
 
 
 class Post(models.Model):
