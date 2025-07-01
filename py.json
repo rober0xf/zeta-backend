@@ -1,0 +1,19 @@
+{
+  "include": ["core", "apps"],
+  "exclude": [
+    "**/node_modules",
+    "**/__pycache__",
+    "**/.venv",
+    "**/.git",
+    "**/.idea",
+    "**/migrations"
+  ],
+  "venvPath": ".",
+  "venv": ".venv",
+  "reportMissingImports": false,
+  "reportMissingTypeStubs": false,
+  "autoImportCompletions": false,
+  "pythonVersion": "3.12",
+  "typeCheckingMode": "basic",
+  "exclude": ["migrations"]
+}
