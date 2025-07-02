@@ -10,6 +10,16 @@ def blog_thumbnail_dir(instance, filename):
 
 
 class Post(models.Model):
+    # we will see the post in the get request if the post is published. by default they're draft
+    class PostObjects(models.Manager):
+        def get_queryset(self):
+            return super().get_queryset().filter(status="published")
+
+    options = (
+        ("draft", "Draft"),
+        ("published", "Published"),
+    )
+
     title = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, unique=True)
     thumbnail = models.ImageField(upload_to=blog_thumbnail_dir, max_length=500)
@@ -20,6 +30,9 @@ class Post(models.Model):
         sanitize=True,
     )
     views = models.IntegerField(default=0, blank=True)
+    status = models.CharField(max_length=10, choices=options, default="draft")
+    objects = models.Manager()  # manager by default
+    post_objects = PostObjects()  # our custom manager
 
     class Meta:
         ordering = ("-published",)

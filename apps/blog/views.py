@@ -13,9 +13,9 @@ from .serializers import PostListSerializer
 class PostsListView(APIView):
     permission_classes = (permissions.AllowAny,)  # allow any to get request. it ends with , because its a tuple
 
-    def get(self, request, format=None):
-        if Post.objects.all().exists():
-            posts = Post.objects.all()
+    def get(self, request):
+        if Post.post_objects.all().exists():  # we use our custom object
+            posts = Post.post_objects.all()
             paginator = SmallPagination()
             results = paginator.paginate_queryset(posts, request)
             serializer = PostListSerializer(results, many=True)
@@ -27,11 +27,11 @@ class PostsListView(APIView):
 class ListPostByCategory(APIView):
     permission_classes = (permissions.AllowAny,)
 
-    def get(self, request, format=None):
-        if Post.objects.exists():
+    def get(self, request):
+        if Post.post_objects.exists():
             slug = request.query_params.get("slug")  # get the slug from the url
             category = Category.objects.get(slug=slug)
-            posts = Post.objects.order_by("-published").all()
+            posts = Post.post_objects.order_by("-published").all()
 
             if not Category.objects.filter(parent=category).exists():  # it doesnt have a child, its a parent category
                 posts = posts.filter(category=category)
@@ -52,8 +52,8 @@ class ListPostByCategory(APIView):
 
 class PostDetailView(APIView):
     def get(self, request, post_slug):
-        if Post.objects.filter(slug=post_slug).exists():
-            post = Post.objects.get(slug=post_slug)
+        if Post.post_objects.filter(slug=post_slug).exists():
+            post = Post.post_objects.get(slug=post_slug)
             serializer = PostListSerializer(post)
 
             address = request.META.get("HTTP_X_FORWARDED_FOR")
@@ -76,7 +76,7 @@ class PostDetailView(APIView):
 class SearchBlogView(APIView):
     def get(self, request):
         search_term = request.query_params.get("s")  # we take the ?s from the url
-        matches = Post.objects.filter(
+        matches = Post.post_objects.filter(
             Q(title__icontains=search_term) | Q(description__icontains=search_term) | Q(category__name__icontains=search_term),  # __name for the subcategory
         )  # Q filter for complex search
         serializer = PostListSerializer(matches, many=True)
