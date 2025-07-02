@@ -1,7 +1,8 @@
-from django_prose_editor.fields import ProseEditorField
-from pathlib import Path
-import environ
 import os
+from pathlib import Path
+
+import environ
+from django_prose_editor.fields import ProseEditorField
 
 BASE_DIR_BACKEND = Path(__file__).resolve().parent.parent
 BASE_DIR_FRONTED = BASE_DIR_BACKEND.parent / "zeta-frontend"
